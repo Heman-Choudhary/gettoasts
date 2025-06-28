@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, User, Mic } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../contexts/AuthContext';
+import toast from 'react-simple-toasts'; 
 
 export function Signup() {
   const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ export function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -27,33 +28,34 @@ export function Signup() {
     });
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-
+    
+    // Password validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      toast("Passwords do not match.");
       setLoading(false);
       return;
     }
-
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      toast("Password must be at least 6 characters long.");
       setLoading(false);
       return;
     }
-
+    
     try {
       const { error } = await signUp(formData.email, formData.password, formData.fullName);
-      
       if (error) {
-        setError(error.message);
+        toast(error.message);
       } else {
+        toast("A verification email has been sent to your email address. Please verify your email before signing in to your account.");
         navigate('/dashboard');
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      toast("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -83,11 +85,11 @@ export function Signup() {
         {/* Form */}
         <Card>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
+            {/* {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
-            )}
+            )} */}
 
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">

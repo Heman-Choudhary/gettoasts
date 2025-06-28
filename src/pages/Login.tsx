@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Brain, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import toast from 'react-simple-toasts';
+import 'react-simple-toasts/dist/style.css';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,21 +22,28 @@ const Login: React.FC = () => {
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const result = await login(email, password);
-    
-    if (result.success) {
-      navigate(from, { replace: true });
+  const result = await login(email, password);
+
+  if (result.success) {
+    navigate(from, { replace: true });
+  } else {
+    // Show different toast messages based on error
+    if (result.error && result.error.includes('Invalid')) {
+      toast("These credentials don't match our records. Please verify your email and password, or create a new account if you haven't signed up yet.");
+    } else if (result.error && result.error.includes('confirm')) {
+      toast("Please check your email and click the confirmation link before signing in.");
     } else {
-      setError(result.error || 'Login failed');
+      toast(result.error || 'Login failed. Please try again.');
     }
-    
-    setLoading(false);
-  };
+  }
+
+  setLoading(false);
+};
+
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,12 +103,12 @@ const Login: React.FC = () => {
             </div>
           ) : (
             <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-lg" onSubmit={handleResetPassword}>
-              {error && (
+              {/* {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-center">
                   <AlertCircle className="w-4 h-4 mr-2" />
                   {error}
                 </div>
-              )}
+              )} */}
 
               <div>
                 <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700 mb-1">

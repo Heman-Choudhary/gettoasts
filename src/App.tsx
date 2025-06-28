@@ -5,6 +5,9 @@ import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
+// App.tsx
+import 'react-simple-toasts/dist/style.css';
+
 // Pages
 import { Home } from './pages/Home';
 import { Features } from './pages/Features';
