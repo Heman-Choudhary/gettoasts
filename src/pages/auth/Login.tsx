@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff, Mic } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../contexts/AuthContext';
-import toast from 'react-simple-toasts'; // Import toast
+import { useToast } from '../../components/ui/Toast';
 
 export function Login() {
   const [formData, setFormData] = useState({
@@ -13,10 +13,10 @@ export function Login() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState('');
 
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const { error: showError } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -32,17 +32,17 @@ export function Login() {
       const { error } = await signIn(formData.email, formData.password);
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
-          toast("These credentials don't match our records. Please verify your email and password, or create a new account if you haven't signed up yet.");
+          showError("These credentials don't match our records. Please verify your email and password, or create a new account if you haven't signed up yet.", "Login Failed");
         } else if (error.message.includes('Email not confirmed')) {
-          toast("Please check your email and click the confirmation link before signing in.");
+          showError("Please check your email and click the confirmation link before signing in.", "Email Not Confirmed");
         } else {
-          toast(`Login failed: ${error.message}. Please try again or contact support if the issue persists.`);
+          showError(`Login failed: ${error.message}. Please try again or contact support if the issue persists.`, "Login Error");
         }
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
-      toast("An unexpected error occurred. Please try again.");
+      showError("An unexpected error occurred. Please try again.", "Unexpected Error");
     } finally {
       setLoading(false);
     }
@@ -72,23 +72,6 @@ export function Login() {
         {/* Form */}
         <Card>
           <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-600 text-sm">{error}</p>
-                {error.includes('create an account first') && (
-                  <div className="mt-3">
-                    <Link to="/signup">
-                      <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
-                        Go to Signup Page
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            )} */}
-            
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email address

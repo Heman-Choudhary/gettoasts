@@ -1,12 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './components/ui/Toast';
 import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
-
-// App.tsx
-import 'react-simple-toasts/dist/style.css';
 
 // Pages
 import { Home } from './pages/Home';
@@ -195,9 +193,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

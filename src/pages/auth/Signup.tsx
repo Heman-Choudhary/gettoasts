@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff, User, Mic } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../contexts/AuthContext';
-import toast from 'react-simple-toasts'; 
+import { useToast } from '../../components/ui/Toast';
 
 export function Signup() {
   const [formData, setFormData] = useState({
@@ -16,10 +16,10 @@ export function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState('');
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const { error: showError, success: showSuccess } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,20 +28,18 @@ export function Signup() {
     });
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     // Password validation
     if (formData.password !== formData.confirmPassword) {
-      toast("Passwords do not match.");
+      showError("Passwords do not match.", "Validation Error");
       setLoading(false);
       return;
     }
     if (formData.password.length < 6) {
-      toast("Password must be at least 6 characters long.");
+      showError("Password must be at least 6 characters long.", "Validation Error");
       setLoading(false);
       return;
     }
@@ -49,13 +47,13 @@ export function Signup() {
     try {
       const { error } = await signUp(formData.email, formData.password, formData.fullName);
       if (error) {
-        toast(error.message);
+        showError(error.message, "Signup Failed");
       } else {
-        toast("A verification email has been sent to your email address. Please verify your email before signing in to your account.");
+        showSuccess("A verification email has been sent to your email address. Please verify your email before signing in to your account.", "Account Created Successfully");
         navigate('/dashboard');
       }
     } catch (err) {
-      toast("An unexpected error occurred.");
+      showError("An unexpected error occurred.", "Unexpected Error");
     } finally {
       setLoading(false);
     }
@@ -85,12 +83,6 @@ export function Signup() {
         {/* Form */}
         <Card>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-600 text-sm">{error}</p>
-              </div>
-            )} */}
-
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
                 Full name
